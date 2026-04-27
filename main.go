@@ -42,12 +42,13 @@ func main()  {
 	}
 
 	fmt.Println("groqAPI", groqAPI)
-	out, err := exec.Command("git", "diff").Output()
+	out, err := exec.Command("git", "diff", "--staged").Output()
 
 	if err != nil {
 		fmt.Println("there is an error in running git diff")
 	}
 
+	fmt.Println("📄 Diff:\n", string(out))
 
 	result:=getCommitMessages(string(out), groqAPI)
 
@@ -69,9 +70,6 @@ func main()  {
 	}
 
 	fmt.Println("you choose commit message: ", result);
-
-	
-	exec.Command("git", "add", ".").Run()
 
 	out, err = exec.Command("git", "commit", "-m", result).CombinedOutput()
 
