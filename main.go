@@ -9,6 +9,9 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
+	"strings"
+
+	"github.com/manifoldco/promptui"
 )
 
 func main()  {
@@ -29,41 +32,76 @@ func main()  {
 		err := os.WriteFile(root + "/.lzc_config", []byte(groqAPI), 0644)
 		if err != nil{
 			fmt.Println("There is a fucking error in setting up groq api key first time")
-		}
-		
+		}		
 	} else {
 		res, err :=os.ReadFile(root + "/.lzc_config")
 		groqAPI=string(res)
 		if err != nil{
 			fmt.Println("Error in reading file")
 		}
-		println("groqAPI", groqAPI)
-		out, err := exec.Command("git", "diff").Output()
+	}
 
-		if err != nil {
-			fmt.Println("there is an error in running git diff")
-		}
+	fmt.Println("groqAPI", groqAPI)
+	out, err := exec.Command("git", "diff").Output()
 
-		println(string(out))
+	if err != nil {
+		fmt.Println("there is an error in running git diff")
+	}
 
-		result:=getCommitMessages(string(out), groqAPI)
-		fmt.Println("result", result)
 
+	result:=getCommitMessages(string(out), groqAPI)
+
+	commitMessages:=strings.Split(result, "\n")
+	for _, message := range commitMessages {
+		fmt.Println(message)
+	}
+
+	prompt := promptui.Select{
+		Label: "Select commit message",
+		Items: commitMessages,
+	}
+
+	_, result, err = prompt.Run()	
+
+	if err != nil {
+		fmt.Println("Prompt failed:", err)
+		return
+	}
+
+	fmt.Println("you choose commit message: ", result);
+
+	
+	exec.Command("git", "add", ".").Run()
+
+	out, err = exec.Command("git", "commit", "-m", result).CombinedOutput()
+
+	fmt.Println(string(out))
+	
+	if err != nil {
+		fmt.Println("there is an error in running git commit", err)
 	}
 
 }
 
 
 func getCommitMessages(diff string, apiKey string) string{
-	prompt:=`You are a git commit message expert. Analyze the following git diff and suggest exactly 3 commit messages, each with a different style.
+	prompt:=`You are a git commit message expert. Analyze the following git diff and suggest exactly 3 professional commit messages.
 
-Message 1 — Concise: short and to the point, under 50 chars, conventional commit format (feat:, fix:, chore: etc.)
-Message 2 — Detailed: descriptive, explains what and why, under 72 chars, conventional commit format
-Message 3 — Casual: informal, human tone, no strict format, something a developer would actually type at 2am
+All 3 must follow conventional commit format (feat:, fix:, chore:, refactor:, docs:, etc.)
+
+Message 1 — Short: under 50 chars, bare minimum but clear
+Message 2 — Medium: under 72 chars, adds a bit more context
+Message 3 — Descriptive: under 72 chars, explains what and why
+
+Examples:
+1. feat: add Groq API integration
+2. feat: add Groq API to generate commit messages from diff
+3. feat: integrate Groq API to auto-suggest commit messages based on git diff
 
 Rules:
 - Return ONLY the 3 messages, numbered 1. 2. 3.
-- No extra explanation, no headers, no other text whatsoever
+- No extra explanation, no headers, no labels, no other text
+- Do NOT include style labels like "Short:" or "Medium:"
 
 Git diff:
 ` + diff + ``
