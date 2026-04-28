@@ -78,6 +78,15 @@ func GetCommitMessages(diff, apiKey string) ([]string, error) {
 	}
 	commitMessages:=strings.Split(groqResponse.Choices[0].Message.Content, "\n")
 
+	for i, msg := range commitMessages {
+		msg = strings.TrimSpace(msg)
+		// remove "1. " "2. " etc
+		if len(msg) > 2 && msg[1] == '.' {
+			msg = strings.TrimSpace(msg[2:])
+		}
+		commitMessages[i] = msg
+	}
+
 	
 	return commitMessages, nil
 }
