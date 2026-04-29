@@ -48,3 +48,14 @@ func StageSelectedFiles(files []string) error {
 	}
 	return nil
 }
+
+func IsGitRepo() bool {
+	cmd := exec.Command("git", "rev-parse", "--is-inside-work-tree")
+	err := cmd.Run()
+	return err == nil
+}
+
+func InitRepo() error{
+	err := exec.Command("git", "init").Run()
+	return err
+}

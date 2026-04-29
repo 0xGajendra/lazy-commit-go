@@ -11,6 +11,34 @@ import (
 )
 
 func Run(){
+	if(!git.IsGitRepo()){
+		fmt.Println("working directory is not a git repository")
+		prompt := promptui.Select{
+		Label: "would you like to initialize it as a git repository?",
+		Items: []string{"Yes", "No"},
+		}
+
+		_, result, err := prompt.Run()
+
+		if err != nil {
+			fmt.Println("Prompt failed:", err)
+			return
+		}
+		if result == "Yes" {
+			err = git.InitRepo()
+			if err != nil {
+				fmt.Println("Error initializing git repository:", err)
+				return
+			}
+			fmt.Println("Git repository initialized successfully.")
+		} else {
+			fmt.Println("Exiting without initializing git repository.")
+			return
+		}
+
+		
+		return
+	}
 	var err error
 	files, err := git.GetChangedFiles()
 	if err != nil {
@@ -81,7 +109,7 @@ func Run(){
 
 
 	editPrompt := promptui.Prompt{
-		Label:   "Edit your commit message",
+		Label:   "Edit your commit message(enter to keep unchanged)",
 		Default: result,
 	}
 	result, err = editPrompt.Run()
