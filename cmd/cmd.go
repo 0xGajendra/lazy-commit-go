@@ -2,9 +2,9 @@ package cmd
 
 import (
 	"fmt"
-	"lazy-commit-go/internal/config"
-	"lazy-commit-go/internal/git"
-	"lazy-commit-go/internal/groq"
+	"github.com/0xGajendra/lazy-commit-go/internal/config"
+	"github.com/0xGajendra/lazy-commit-go/internal/git"
+	"github.com/0xGajendra/lazy-commit-go/internal/groq"
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/manifoldco/promptui"
 )
@@ -128,7 +128,7 @@ func Run(){
 		fmt.Println("Error getting current branch:", err)
 		return
 	}
-	fmt.Printf("Changes committed to branch %s with message: %s\n", branch, result)
+	fmt.Printf("Changes committed to branch \"%s\" with message: \"%s\"\n", branch, result)
 	prompt = promptui.Select{
 		Label: "Do you want to push the changes? (y/n)",
 		Items: []string{"y", "n"},

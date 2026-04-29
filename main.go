@@ -1,7 +1,7 @@
 package main
 
 import (
-	"lazy-commit-go/cmd"
+	"github.com/0xGajendra/lazy-commit-go/cmd"
 )
 
 func main()  {
