@@ -51,6 +51,17 @@ func Run(){
 		return
 	}
 
+
+	editPrompt := promptui.Prompt{
+		Label:   "Edit your commit message",
+		Default: result,
+	}
+	result, err = editPrompt.Run()
+	if err != nil {
+		fmt.Println("Prompt failed:", err)
+		return
+	}
+
 	err = git.Commit(result)
 	
 	if err != nil {
