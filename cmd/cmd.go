@@ -22,6 +22,7 @@ func Run(){
 		fmt.Println("- ", file)
 	}
 
+	files = append([]string{"All files"}, files...)
 	filesSelected := []string{}
 	filePrompt := &survey.MultiSelect{
 		Message: "What files do you want to commit?",
@@ -29,7 +30,11 @@ func Run(){
 	}
 	survey.AskOne(filePrompt, &filesSelected)
 
-	err = git.StageSelectedFiles(filesSelected)
+	if len(filesSelected) > 0 && filesSelected[0] == "All files" {
+		err = git.StageSelectedFiles([]string{"."})
+	} else {
+		err = git.StageSelectedFiles(filesSelected)
+	}
 	if err != nil {
 		fmt.Println("Error staging files:", err)
 		return
