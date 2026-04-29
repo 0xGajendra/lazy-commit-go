@@ -5,7 +5,6 @@ import (
 	"lazy-commit-go/internal/config"
 	"lazy-commit-go/internal/git"
 	"lazy-commit-go/internal/groq"
-
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/manifoldco/promptui"
 )
