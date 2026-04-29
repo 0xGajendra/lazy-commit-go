@@ -59,3 +59,16 @@ func InitRepo() error{
 	err := exec.Command("git", "init").Run()
 	return err
 }
+
+func GetCurrentBranch() (string, error) {
+	out, err := exec.Command("git", "branch", "--show-current").Output()
+	if err != nil {
+		return "", err
+	}
+	return strings.TrimSpace(string(out)), nil
+}
+
+func PushChanges() error {
+	err := exec.Command("git", "push", "-u", "origin", "HEAD").Run()
+	return err
+}

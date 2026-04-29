@@ -122,4 +122,30 @@ func Run(){
 	if err != nil {
 		fmt.Println("there is an error in running git commit", err)
 	}
+
+	branch, err:= git.GetCurrentBranch()
+	if err != nil{
+		fmt.Println("Error getting current branch:", err)
+		return
+	}
+	fmt.Printf("Changes committed to branch %s with message: %s\n", branch, result)
+	prompt = promptui.Select{
+		Label: "Do you want to push the changes? (y/n)",
+		Items: []string{"y", "n"},
+	}
+	_, result, err = prompt.Run()
+	if err != nil {
+		fmt.Println("Prompt failed:", err)
+		return
+	}
+	if result == "y" {
+		err = git.PushChanges()
+		if err != nil {
+			fmt.Println("Error pushing changes:", err)
+			return
+		}
+		fmt.Println("Changes pushed successfully.")
+	} else {
+		fmt.Println("Changes committed but not pushed.")
+	}
 }
