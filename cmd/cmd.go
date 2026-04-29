@@ -6,17 +6,40 @@ import (
 	"lazy-commit-go/internal/git"
 	"lazy-commit-go/internal/groq"
 
+	"github.com/AlecAivazis/survey/v2"
 	"github.com/manifoldco/promptui"
 )
 
 func Run(){
+	var err error
+	files, err := git.GetChangedFiles()
+	if err != nil {
+		fmt.Println("Error getting changed files:", err)
+		return
+	}
+	fmt.Println("Changed files:")
+	for _, file := range files {
+		fmt.Println("- ", file)
+	}
+
+	filesSelected := []string{}
+	filePrompt := &survey.MultiSelect{
+		Message: "What files do you want to commit?",
+		Options: files,
+	}
+	survey.AskOne(filePrompt, &filesSelected)
+
+	err = git.StageSelectedFiles(filesSelected)
+	if err != nil {
+		fmt.Println("Error staging files:", err)
+		return
+	}
 	var groqAPI string
 	if(!config.IsConfigFileExist()){
 		fmt.Println("Enter groq api key: ")		
 		fmt.Scan(&groqAPI)
 		config.SaveAPIKey(groqAPI)
 	}
-	var err error
 	groqAPI, err = config.LoadAPIKey()
 	if err != nil {
 		fmt.Println("Error loading API key:", err)
