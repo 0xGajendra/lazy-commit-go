@@ -44,6 +44,11 @@ func Run(){
 		fmt.Println("Error getting changed files:", err)
 		return
 	}
+
+	if(len(files) == 0){
+		fmt.Println("No changes to commit.")
+		return
+	}
 	fmt.Println("Changed files:")
 	for _, file := range files {
 		fmt.Println("- ", file)
